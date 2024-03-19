@@ -9,6 +9,8 @@ const taskList = document.querySelector(".ongoing-task-list");
 const tasks = JSON.parse(localStorage.getItem("ongoingTasks")) || [];
 const archiveTasks = JSON.parse(localStorage.getItem("archiveTasks")) || [];
 
+let clickStartTime;
+
 function renderTasks() {
   taskList.innerHTML = ""; // Clear existing tasks
   if (tasks.length === 0) {
@@ -21,18 +23,76 @@ function renderTasks() {
       taskElement.textContent = task.title;
       taskElement.classList.add("task", task.status); // Add appropriate class (e.g., 'ongoing', 'completed')
       taskElement.dataset.index = index; // Store task index for later reference
+      const controlsDiv = document.createElement("div");
+      controlsDiv.classList.add("li-controls"); // Add the class 'li-controls'
+      controlsDiv.appendChild(createDeleteButton(taskElement, index)); // Append the delete button
+      controlsDiv.appendChild(createArchiveButton(taskElement, index)); // Append the delete button
+      controlsDiv.appendChild(createEditButton(taskElement, index)); // Append the delete button
+      controlsDiv.style.display = "none";
+      taskElement.appendChild(controlsDiv);
 
-      // Add event listener for long press (you can customize the duration)
-      taskElement.addEventListener("mousedown", (e) => {
-        const timeout = setTimeout(() => {
-          // Show controls (delete, archive, edit)
-          // You can create buttons here and attach event listeners
-          createDeleteButton(taskElement, index);
-          createArchiveButton(taskElement, index);
-          createEditButton(taskElement, index);
-        }, 1000); // 1 second for long press
-        taskElement.addEventListener("mouseup", () => clearTimeout(timeout));
+      taskElement.addEventListener("pointerdown", (event) => {
+        clickStartTime = Date.now();
       });
+
+      taskElement.addEventListener("pointerup", () => {
+        const clickDuration = Date.now() - clickStartTime;
+        if (clickDuration < 500) {
+          if (controlsDiv.style.display == "flex") {
+            controlsDiv.style.display = "none";
+          } else if (taskElement.classList.contains("pending")) {
+            taskElement.classList.add("ongoing");
+            taskElement.classList.remove("pending");
+            tasks[index].status = "ongoing";
+            localStorage.setItem("ongoingTasks", JSON.stringify(tasks));
+          } else if (taskElement.classList.contains("ongoing")) {
+            taskElement.classList.add("completed");
+            taskElement.classList.remove("ongoing");
+            tasks[index].status = "completed";
+            localStorage.setItem("ongoingTasks", JSON.stringify(tasks));
+          } else {
+            taskElement.classList.add("pending");
+            taskElement.classList.remove("completed");
+            tasks[index].status = "pending";
+            localStorage.setItem("ongoingTasks", JSON.stringify(tasks));
+          }
+        } else {
+          controlsDiv.style.display = "flex";
+        }
+      });
+      // Add event listener for long press (you can customize the duration)
+      // taskElement.addEventListener("mousedown", (e) => {
+      //   const timeout = setTimeout(() => {
+      //     // Show controls (delete, archive, edit)
+      //     // You can create buttons here and attach event listeners
+
+      //     // createArchiveButton(taskElement, index);
+      //     // createEditButton(taskElement, index);
+      //     controlsDiv.style.display = "flex";
+      //   }, 500); // 1 second for long press
+      //   taskElement.addEventListener("mouseup", () => clearTimeout(timeout));
+      // });
+
+      // taskElement.addEventListener("click", () => {
+      //   if (controlsDiv.style.display == "flex") {
+      //     controlsDiv.style.display = "none";
+      //   } else if (taskElement.classList.contains("pending")) {
+      //     taskElement.classList.add("ongoing");
+      //     taskElement.classList.remove("pending");
+      //     tasks[index].status = "ongoing";
+      //     localStorage.setItem("ongoingTasks", JSON.stringify(tasks));
+      //   } else if (taskElement.classList.contains("ongoing")) {
+      //     taskElement.classList.add("completed");
+      //     taskElement.classList.remove("ongoing");
+      //     tasks[index].status = "completed";
+      //     localStorage.setItem("ongoingTasks", JSON.stringify(tasks));
+      //   } else {
+      //     taskElement.classList.add("pending");
+      //     taskElement.classList.remove("completed");
+      //     tasks[index].status = "pending";
+      //     localStorage.setItem("ongoingTasks", JSON.stringify(tasks));
+      //   }
+      // });
 
       taskList.appendChild(taskElement);
     });
@@ -41,7 +101,7 @@ function renderTasks() {
 
 // Function to add a new task
 function addTask(title) {
-  tasks.push({ title, status: "ongoing" }); // You can add more properties as needed
+  tasks.push({ title, status: "pending" }); // You can add more properties as needed
   localStorage.setItem("ongoingTasks", JSON.stringify(tasks));
   renderTasks();
 }
@@ -84,7 +144,8 @@ function createDeleteButton(taskElement, index) {
     localStorage.setItem("ongoingTasks", JSON.stringify(tasks)); // Update localStorage
     renderTasks(); // Re-render the task list
   });
-  taskElement.appendChild(deleteButton);
+  return deleteButton;
+  // taskElement.appendChild(deleteButton);
 }
 
 function createArchiveButton(taskElement, index) {
@@ -100,7 +161,8 @@ function createArchiveButton(taskElement, index) {
 
     renderTasks(); // Re-render the task list
   });
-  taskElement.appendChild(archiveButton);
+  // taskElement.appendChild(archiveButton);
+  return archiveButton;
 }
 
 function createEditButton(taskElement, index) {
@@ -115,7 +177,8 @@ function createEditButton(taskElement, index) {
       renderTasks(); // Re-render the task list
     }
   });
-  taskElement.appendChild(editButton);
+  // taskElement.appendChild(editButton);
+  return editButton;
 }
 
 // Initial rendering

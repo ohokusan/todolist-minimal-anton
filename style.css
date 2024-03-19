@@ -4,6 +4,12 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
 }
 
 li {
@@ -122,31 +128,34 @@ section li::before {
   position: absolute;
   content: "•";
   left: 1.6px;
-  top: auto;
+  top: 2px;
 }
 
-section li.inprogress {
+section li.ongoing {
   color: rgba(255, 255, 255, 0.7);
   padding-left: 17px;
   /* text-decoration: underline 1px;
   text-underline-offset: 2px; */
 }
 
-section li.inprogress::before {
+section li.ongoing::before {
   overflow: hidden;
   left: 0;
   content: "\00d7";
   color: rgba(255, 255, 255, 0.7);
-  width: 0.266rem;
+  width: 0.33rem;
 }
 
-section li.done {
-  text-decoration: line-through;
+section li.completed {
   color: rgba(255, 255, 255, 0.4);
   padding-left: 17px;
 }
 
-section li.done::before {
+section li.completed::first-line {
+  text-decoration: line-through;
+}
+
+section li.completed::before {
   left: 0;
   content: "\00d7";
   color: rgba(255, 255, 255, 0.4);
@@ -160,6 +169,12 @@ section li.done::before {
 
 .li-controls button {
   font-style: italic;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+}
+
+.li-controls button:hover {
+  color: rgba(255, 255, 255, 1);
 }
 
 .btn-delete {

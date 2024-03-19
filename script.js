@@ -31,11 +31,11 @@ function renderTasks() {
       controlsDiv.style.display = "none";
       taskElement.appendChild(controlsDiv);
 
-      taskElement.addEventListener("pointerdown", (event) => {
+      taskElement.addEventListener("mousedown", (event) => {
         clickStartTime = Date.now();
       });
 
-      taskElement.addEventListener("pointerup", () => {
+      taskElement.addEventListener("mouseup", () => {
         const clickDuration = Date.now() - clickStartTime;
         if (clickDuration < 500) {
           if (controlsDiv.style.display == "flex") {

@@ -32,6 +32,7 @@
           <div class="li-controls">
             <button class="btn-delete">Delete</button>
             <button class="btn-archive">Archive</button>
+            <button class="btn-edit">Edit</button>
           </div>
         </li>
         <li class="inprogress">
@@ -45,7 +46,15 @@
     </section>
 
     <button class="btn-float">+ new task</button>
+    <div class="managing-task">
+      <div class="task-wrapper container">
+        <textarea name="task" placeholder="Enter a task here" id="task"></textarea>
+        <button class="btn btn-confirm">Confirm</button>
+        <button class="btn btn-close">+</button>
+      </div>
+    </div>
   </main>
+
   <script type="module" src="script.js"></script>
 </body>
 

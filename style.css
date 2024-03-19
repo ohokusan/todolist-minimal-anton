@@ -160,6 +160,10 @@ section li.done::before {
   font-style: italic;
 }
 
+.btn-delete {
+  margin-right: 40px;
+}
+
 .btn-float {
   font-size: 20px;
   font-style: italic;
@@ -172,4 +176,71 @@ section li.done::before {
   transform: translate(-50%, -50%);
   background: #596880;
   z-index: 2;
+}
+
+.managing-task {
+  display: none;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: #596880;
+  z-index: 3;
+  width: 100vw;
+  height: 100vh;
+}
+
+.task-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: flex-start;
+  position: relative;
+  height: 100vh;
+  gap: 20px;
+  padding-top: 200px;
+}
+
+textarea {
+  flex-basis: 100%;
+  font-size: 20px;
+  text-align: center;
+  font-family: inherit;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 20px;
+  background: none;
+  border: none;
+  resize: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border: none;
+}
+
+.managing-task .btn-confirm {
+  font-size: 20px;
+  font-style: italic;
+  width: 100%;
+  display: none;
+}
+
+.managing-task .btn-close {
+  position: absolute;
+  right: 30px;
+  top: 0;
+  transform: rotate(45deg);
+  font-size: 60px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.managing-task .btn-close:hover {
+  color: rgba(255, 255, 255, 0.7);
 }

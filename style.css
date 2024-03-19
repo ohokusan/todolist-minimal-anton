@@ -68,6 +68,7 @@ main {
 
 .menu {
   display: flex;
+  justify-content: center;
   font-size: 1.1rem;
   text-transform: uppercase;
   letter-spacing: 0.1rem;

@@ -53,7 +53,17 @@ button,
 /* ------------ */
 
 header {
-  margin: 50px 0;
+  padding: 40px 0 40px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #596880;
+  z-index: 2;
+}
+
+main {
+  padding: 130px 0;
 }
 
 .menu {
@@ -148,4 +158,18 @@ section li.done::before {
 
 .li-controls button {
   font-style: italic;
+}
+
+.btn-float {
+  font-size: 20px;
+  font-style: italic;
+  position: fixed;
+  bottom: 50px;
+  left: auto;
+  right: auto;
+  top: auto;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #596880;
+  z-index: 2;
 }

@@ -49,9 +49,9 @@ function renderTasks() {
         clearTimeout(pressTimer);
       });
 
-      // taskElement.addEventListener("touchcancel", () => {
-      //   clearTimeout(pressTimer);
-      // });
+      taskElement.addEventListener("touchcancel", () => {
+        clearTimeout(pressTimer);
+      });
 
       taskElement.addEventListener("mousedown", () => {
         pressTimer = setTimeout(() => {
@@ -64,9 +64,9 @@ function renderTasks() {
         clearTimeout(pressTimer);
       });
 
-      // taskElement.addEventListener("mouseleave", () => {
-      //   clearTimeout(pressTimer);
-      // });
+      taskElement.addEventListener("mouseleave", () => {
+        clearTimeout(pressTimer);
+      });
 
       taskElement.addEventListener("click", (e) => {
         if (isContextMenuOpen) {

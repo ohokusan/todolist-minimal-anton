@@ -112,11 +112,12 @@ main {
 .task-list li.ongoing {
   color: rgba(255, 255, 255, 0.7);
   padding-left: 17px;
+  transform: translateX(-2px);
 }
 
 .task-list li.ongoing::before {
   overflow: hidden;
-  left: 0;
+  left: 2px;
   content: "\00d7";
   color: rgba(255, 255, 255, 0.7);
   width: 0.33rem;
@@ -125,6 +126,7 @@ main {
 .task-list li.completed {
   color: rgba(255, 255, 255, 0.4);
   padding-left: 17px;
+  transform: translateX(-2px);
 }
 
 .task-list li.completed::first-line {
@@ -132,7 +134,7 @@ main {
 }
 
 .task-list li.completed::before {
-  left: 0;
+  left: 2px;
   content: "\00d7";
   color: rgba(255, 255, 255, 0.4);
 }

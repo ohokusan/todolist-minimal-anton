@@ -1,185 +1,202 @@
-const newTaskBtn = document.querySelector(".btn-float");
-const managingTaskEl = document.querySelector(".managing-task");
+const newTaskBtn = document.getElementById("new-task-btn");
+const managingTaskEl = document.getElementById("task-modal");
 const taskInputEl = document.getElementById("task-input");
-const closeBtn = document.querySelector(".btn-close");
-const confirmBtn = document.querySelector(".btn-confirm");
-const ongoingBtn = document.getElementById("ongoing");
-const archiveBtn = document.getElementById("archive");
-const taskList = document.querySelector(".ongoing-task-list");
-const tasks = JSON.parse(localStorage.getItem("ongoingTasks")) || [];
-const archiveTasks = JSON.parse(localStorage.getItem("archiveTasks")) || [];
+const closeBtn = document.getElementById("close-btn");
+const confirmBtn = document.getElementById("confirm-btn");
+const ongoingBtn = document.getElementById("ongoing-btn");
+const archiveBtn = document.getElementById("archive-btn");
+const taskList = document.getElementById("ongoing-list");
 
-let clickStartTime;
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
 function renderTasks() {
-  taskList.innerHTML = ""; // Clear existing tasks
-  if (tasks.length === 0) {
-    // Display "Add your first task..." message
-    taskList.innerHTML =
-      "<p style='text-align:center;'>Add your first task...</p>";
+  taskList.innerHTML = "";
+
+  const filteredTasks = ongoingBtn.classList.contains("active")
+    ? tasks.filter((task) => task.status !== "archived")
+    : tasks.filter((task) => task.status === "archived");
+
+  if (filteredTasks.length === 0) {
+    taskList.innerHTML = "<p style='text-align:center;'>No tasks found.</p>";
   } else {
-    tasks.forEach((task, index) => {
+    filteredTasks.forEach((task) => {
       const taskElement = document.createElement("li");
       taskElement.textContent = task.title;
-      taskElement.classList.add("task", task.status); // Add appropriate class (e.g., 'ongoing', 'completed')
-      taskElement.dataset.index = index; // Store task index for later reference
+      taskElement.classList.add("task", task.status);
+
       const controlsDiv = document.createElement("div");
-      controlsDiv.classList.add("li-controls"); // Add the class 'li-controls'
-      controlsDiv.appendChild(createDeleteButton(taskElement, index)); // Append the delete button
-      controlsDiv.appendChild(createArchiveButton(taskElement, index)); // Append the delete button
-      controlsDiv.appendChild(createEditButton(taskElement, index)); // Append the delete button
+      controlsDiv.classList.add("task-controls");
+      controlsDiv.appendChild(createDeleteButton(task));
+      controlsDiv.appendChild(createArchiveButton(task));
+      controlsDiv.appendChild(createEditButton(task));
       controlsDiv.style.display = "none";
+
       taskElement.appendChild(controlsDiv);
 
-      taskElement.addEventListener("pointerdown", (event) => {
-        clickStartTime = Date.now();
+      let pressTimer;
+      let isContextMenuOpen = false;
+
+      taskElement.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        pressTimer = setTimeout(() => {
+          isContextMenuOpen = true;
+          controlsDiv.style.display = "flex";
+        }, 400);
       });
 
-      taskElement.addEventListener("pointerup", () => {
-        const clickDuration = Date.now() - clickStartTime;
-        if (clickDuration < 500) {
-          if (controlsDiv.style.display == "flex") {
-            controlsDiv.style.display = "none";
-          } else if (taskElement.classList.contains("pending")) {
-            taskElement.classList.add("ongoing");
-            taskElement.classList.remove("pending");
-            tasks[index].status = "ongoing";
-            localStorage.setItem("ongoingTasks", JSON.stringify(tasks));
-          } else if (taskElement.classList.contains("ongoing")) {
-            taskElement.classList.add("completed");
-            taskElement.classList.remove("ongoing");
-            tasks[index].status = "completed";
-            localStorage.setItem("ongoingTasks", JSON.stringify(tasks));
-          } else {
-            taskElement.classList.add("pending");
-            taskElement.classList.remove("completed");
-            tasks[index].status = "pending";
-            localStorage.setItem("ongoingTasks", JSON.stringify(tasks));
-          }
-        } else {
+      taskElement.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        clearTimeout(pressTimer);
+      });
+
+      // taskElement.addEventListener("touchcancel", () => {
+      //   clearTimeout(pressTimer);
+      // });
+
+      taskElement.addEventListener("mousedown", () => {
+        pressTimer = setTimeout(() => {
+          isContextMenuOpen = true;
           controlsDiv.style.display = "flex";
+        }, 400);
+      });
+
+      taskElement.addEventListener("mouseup", (e) => {
+        clearTimeout(pressTimer);
+      });
+
+      // taskElement.addEventListener("mouseleave", () => {
+      //   clearTimeout(pressTimer);
+      // });
+
+      taskElement.addEventListener("click", (e) => {
+        if (isContextMenuOpen) {
+          isContextMenuOpen = false;
+          controlsDiv.style.display = "none";
+        } else {
+          toggleTaskStatus(task, taskElement);
         }
       });
-      // Add event listener for long press (you can customize the duration)
-      // taskElement.addEventListener("mousedown", (e) => {
-      //   const timeout = setTimeout(() => {
-      //     // Show controls (delete, archive, edit)
-      //     // You can create buttons here and attach event listeners
-
-      //     // createArchiveButton(taskElement, index);
-      //     // createEditButton(taskElement, index);
-      //     controlsDiv.style.display = "flex";
-      //   }, 500); // 1 second for long press
-      //   taskElement.addEventListener("mouseup", () => clearTimeout(timeout));
-      // });
-
-      // taskElement.addEventListener("click", () => {
-      //   if (controlsDiv.style.display == "flex") {
-      //     controlsDiv.style.display = "none";
-      //   } else if (taskElement.classList.contains("pending")) {
-      //     taskElement.classList.add("ongoing");
-      //     taskElement.classList.remove("pending");
-      //     tasks[index].status = "ongoing";
-      //     localStorage.setItem("ongoingTasks", JSON.stringify(tasks));
-      //   } else if (taskElement.classList.contains("ongoing")) {
-      //     taskElement.classList.add("completed");
-      //     taskElement.classList.remove("ongoing");
-      //     tasks[index].status = "completed";
-      //     localStorage.setItem("ongoingTasks", JSON.stringify(tasks));
-      //   } else {
-      //     taskElement.classList.add("pending");
-      //     taskElement.classList.remove("completed");
-      //     tasks[index].status = "pending";
-      //     localStorage.setItem("ongoingTasks", JSON.stringify(tasks));
-      //   }
-      // });
 
       taskList.appendChild(taskElement);
     });
   }
 }
 
-// Function to add a new task
-function addTask(title) {
-  tasks.push({ title, status: "pending" }); // You can add more properties as needed
-  localStorage.setItem("ongoingTasks", JSON.stringify(tasks));
+function toggleTaskStatus(task, taskElement) {
+  if (task.status === "pending") {
+    task.status = "ongoing";
+  } else if (task.status === "ongoing") {
+    task.status = "completed";
+  } else if (task.status === "completed") {
+    task.status = "pending";
+  }
+  taskElement.classList.remove("pending", "ongoing", "completed");
+  taskElement.classList.add(task.status);
+  saveTasks();
   renderTasks();
 }
 
-// You can similarly handle editing, archiving, and deleting tasks.
-
-newTaskBtn.addEventListener("click", () => {
-  taskInputEl.value = ""; // Clear task input value
-  managingTaskEl.style.display = "block"; // Make managing task element visible
-});
-
-closeBtn.addEventListener("click", () => {
-  // Clear task input value
-  managingTaskEl.style.display = "none"; // Make managing task element visible
-});
-
-taskInputEl.addEventListener("input", () => {
-  if (taskInputEl.value.trim() !== "") {
-    confirmBtn.style.display = "block";
-  } else {
-    confirmBtn.style.display = "none";
-  }
-});
-
-confirmBtn.addEventListener("click", () => {
-  const newTask = taskInputEl.value;
-  if (newTask) {
-    addTask(newTask);
-  }
-  taskInputEl.value = "";
-  managingTaskEl.style.display = "none";
-});
-
-function createDeleteButton(taskElement, index) {
-  const deleteButton = document.createElement("button");
-  deleteButton.textContent = "Delete";
-  deleteButton.classList.add("btn", "btn-delete");
-  deleteButton.addEventListener("click", () => {
-    tasks.splice(index, 1); // Remove task from array
-    localStorage.setItem("ongoingTasks", JSON.stringify(tasks)); // Update localStorage
-    renderTasks(); // Re-render the task list
-  });
-  return deleteButton;
-  // taskElement.appendChild(deleteButton);
+function addTask(title) {
+  tasks.push({ title, status: "pending" });
+  saveTasks();
+  renderTasks();
 }
 
-function createArchiveButton(taskElement, index) {
-  const archiveButton = document.createElement("button");
-  archiveButton.textContent = "Archive";
-  archiveButton.classList.add("btn", "btn-archive");
-  archiveButton.addEventListener("click", () => {
-    const archivedTask = tasks[index]; // Get the task to be archived
-    tasks.splice(index, 1);
-    archiveTasks.push(archivedTask); // Add task to archiveTasks
-    localStorage.setItem("archiveTasks", JSON.stringify(archiveTasks));
-    localStorage.setItem("ongoingTasks", JSON.stringify(tasks)); // Update localStorage
+function deleteTask(task) {
+  const index = tasks.indexOf(task);
+  tasks.splice(index, 1);
+  saveTasks();
+  renderTasks();
+}
 
-    renderTasks(); // Re-render the task list
+function archiveTask(task) {
+  const index = tasks.indexOf(task);
+  tasks[index].status =
+    tasks[index].status === "archived" ? "pending" : "archived";
+  saveTasks();
+  renderTasks();
+}
+
+function editTask(task, newTitle) {
+  const index = tasks.indexOf(task);
+  tasks[index].title = newTitle;
+  saveTasks();
+  renderTasks();
+}
+
+function saveTasks() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function createDeleteButton(task) {
+  const deleteButton = document.createElement("button");
+  deleteButton.textContent = "Delete";
+  deleteButton.classList.add("btn-delete");
+  deleteButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    deleteTask(task);
   });
-  // taskElement.appendChild(archiveButton);
+  return deleteButton;
+}
+
+function createArchiveButton(task) {
+  const archiveButton = document.createElement("button");
+  archiveButton.textContent =
+    task.status === "archived" ? "Unarchive" : "Archive";
+  archiveButton.classList.add("btn-archive");
+  archiveButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    archiveTask(task);
+  });
   return archiveButton;
 }
 
-function createEditButton(taskElement, index) {
+function createEditButton(task) {
   const editButton = document.createElement("button");
   editButton.textContent = "Edit";
-  editButton.classList.add("btn", "btn-edit");
-  editButton.addEventListener("click", () => {
-    const newTitle = prompt("Edit task:", tasks[index].title);
+  editButton.classList.add("btn-edit");
+  editButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const newTitle = prompt("Edit task:", task.title);
     if (newTitle) {
-      tasks[index].title = newTitle; // Update task title
-      localStorage.setItem("ongoingTasks", JSON.stringify(tasks)); // Update localStorage
-      renderTasks(); // Re-render the task list
+      editTask(task, newTitle);
     }
   });
-  // taskElement.appendChild(editButton);
   return editButton;
 }
 
-// Initial rendering
+newTaskBtn.addEventListener("click", () => {
+  taskInputEl.value = "";
+  managingTaskEl.style.display = "block";
+});
+
+closeBtn.addEventListener("click", () => {
+  managingTaskEl.style.display = "none";
+});
+
+taskInputEl.addEventListener("input", () => {
+  confirmBtn.style.display = taskInputEl.value.trim() !== "" ? "block" : "none";
+});
+
+confirmBtn.addEventListener("click", () => {
+  const newTask = taskInputEl.value.trim();
+  if (newTask !== "") {
+    addTask(newTask);
+    taskInputEl.value = "";
+    managingTaskEl.style.display = "none";
+  }
+});
+
+ongoingBtn.addEventListener("click", () => {
+  ongoingBtn.classList.add("active");
+  archiveBtn.classList.remove("active");
+  renderTasks();
+});
+
+archiveBtn.addEventListener("click", () => {
+  archiveBtn.classList.add("active");
+  ongoingBtn.classList.remove("active");
+  renderTasks();
+});
+
 renderTasks();

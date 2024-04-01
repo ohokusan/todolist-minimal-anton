@@ -4,59 +4,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
   <title>ToDo in Rush</title>
   <link rel="manifest" href="/site.webmanifest">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
   <header>
-    <div class="container">
-      <nav>
-        <ul class="menu">
-          <li>
-            <button class="btn active" id="ongoing">Ongoing</button>
-          </li>
-          <li>
-            <button class="btn" id="archive">Archive</button>
-          </li>
-        </ul>
-      </nav>
-    </div>
+    <nav class="container">
+      <ul class="menu">
+        <li><button class="btn active" id="ongoing-btn">Ongoing</button></li>
+        <li><button class="btn" id="archive-btn">Archive</button></li>
+      </ul>
+    </nav>
   </header>
 
   <main>
     <section class="container">
-      <ul class="ongoing-task-list">
-        <!-- <li>
-          Write a journal about others adventurers and their things.
-          <div class="li-controls">
-            <button class="btn-delete">Delete</button>
-            <button class="btn-archive">Archive</button>
-            <button class="btn-edit">Edit</button>
-          </div>
-        </li>
-        <li class="inprogress">
-          Make a dinner
-        </li>
-        <li class="done">
-          Go to sleep
-        </li> -->
-      </ul>
-
+      <ul class="task-list" id="ongoing-list"></ul>
     </section>
 
-    <button class="btn-float">+ new task</button>
-    <div class="managing-task">
+    <button class="btn-float" id="new-task-btn">+ new task</button>
+
+    <div class="managing-task" id="task-modal">
       <div class="task-wrapper container">
-        <textarea name="task-input" placeholder="Enter a task here" id="task-input"></textarea>
-        <button class="btn btn-confirm">Confirm</button>
-        <button class="btn btn-close">+</button>
+        <textarea id="task-input" placeholder="Enter a task here"></textarea>
+        <button class="btn btn-confirm" id="confirm-btn">Confirm</button>
+        <button class="btn btn-close" id="close-btn">+</button>
       </div>
     </div>
   </main>
 
-  <script type="module" src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 
 </html>

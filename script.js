@@ -33,49 +33,59 @@ function renderTasks() {
 
       taskElement.appendChild(controlsDiv);
 
-      let pressTimer;
       let isContextMenuOpen = false;
+      let clickStartTime;
 
       taskElement.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        pressTimer = setTimeout(() => {
-          isContextMenuOpen = true;
-          controlsDiv.style.display = "flex";
-        }, 400);
+        clickStartTime = Date.now();
       });
 
       taskElement.addEventListener("touchend", (e) => {
-        e.preventDefault();
-        clearTimeout(pressTimer);
-      });
-
-      taskElement.addEventListener("touchcancel", () => {
-        clearTimeout(pressTimer);
-      });
-
-      taskElement.addEventListener("mousedown", () => {
-        pressTimer = setTimeout(() => {
-          isContextMenuOpen = true;
-          controlsDiv.style.display = "flex";
-        }, 400);
-      });
-
-      taskElement.addEventListener("mouseup", (e) => {
-        clearTimeout(pressTimer);
-      });
-
-      taskElement.addEventListener("mouseleave", () => {
-        clearTimeout(pressTimer);
-      });
-
-      taskElement.addEventListener("click", (e) => {
-        if (isContextMenuOpen) {
+        const clickDuration = Date.now() - clickStartTime;
+        if (clickDuration < 400 && isContextMenuOpen == false) {
+          toggleTaskStatus(task, taskElement);
+        } else if (isContextMenuOpen == true) {
           isContextMenuOpen = false;
           controlsDiv.style.display = "none";
         } else {
-          toggleTaskStatus(task, taskElement);
+          isContextMenuOpen = true;
+          controlsDiv.style.display = "flex";
         }
       });
+
+      // taskElement.addEventListener("touchcancel", () => {
+      //   clearTimeout(pressTimer);
+      // });
+
+      taskElement.addEventListener("mousedown", () => {
+        clickStartTime = Date.now();
+      });
+
+      taskElement.addEventListener("mouseup", (e) => {
+        const clickDuration = Date.now() - clickStartTime;
+        if (clickDuration < 400 && isContextMenuOpen == false) {
+          toggleTaskStatus(task, taskElement);
+        } else if (isContextMenuOpen == true) {
+          isContextMenuOpen = false;
+          controlsDiv.style.display = "none";
+        } else {
+          isContextMenuOpen = true;
+          controlsDiv.style.display = "flex";
+        }
+      });
+
+      // taskElement.addEventListener("mouseleave", () => {
+      //   clearTimeout(pressTimer);
+      // });
+
+      // taskElement.addEventListener("click", (e) => {
+      //   if (isContextMenuOpen) {
+      //     isContextMenuOpen = false;
+      //     controlsDiv.style.display = "none";
+      //   } else {
+      //     toggleTaskStatus(task, taskElement);
+      //   }
+      // });
 
       taskList.appendChild(taskElement);
     });

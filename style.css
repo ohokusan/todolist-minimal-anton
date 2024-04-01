@@ -232,7 +232,7 @@ textarea:focus {
 .managing-task .btn-close {
   position: absolute;
   right: 30px;
-  top: 0;
+  top: 30;
   transform: rotate(45deg);
   font-size: 60px;
   color: rgba(255, 255, 255, 0.3);

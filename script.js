@@ -36,11 +36,11 @@ function renderTasks() {
       let isContextMenuOpen = false;
       let clickStartTime;
 
-      taskElement.addEventListener("touchstart", (e) => {
+      taskElement.textContent.addEventListener("touchstart", (e) => {
         clickStartTime = Date.now();
       });
 
-      taskElement.addEventListener("touchend", (e) => {
+      taskElement.textContent.addEventListener("touchend", (e) => {
         const clickDuration = Date.now() - clickStartTime;
         if (clickDuration < 400 && isContextMenuOpen == false) {
           toggleTaskStatus(task, taskElement);

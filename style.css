@@ -13,6 +13,9 @@ body {
   font-family: "Source Serif 4", serif;
   color: rgba(255, 255, 255, 0.7);
   background: #596880;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
 }
 
 .container {
